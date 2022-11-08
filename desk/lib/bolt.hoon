@@ -29,10 +29,14 @@
       =^  cards  yosh  (on-poke:ag mark vase)
       [cards this]
     ::
-    ::  If poke is to inner agent, check if poke is allowed
+    ::  If poke is to inner agent,
     ?.  =(mark %bolt-poke)
+      ::
+      ::  Check if whitelist is enabled,
       ?.  public.whitelist
         call-inner
+      ::
+      ::  If so, check if ship is allowed
       ?>  (is-allowed src.bowl whitelist bowl)
         call-inner
     ::
@@ -52,10 +56,29 @@
     =/  gads  !<([@ud %bolt state-0] old)
     =^  cards  yosh  (on-load:yosh !>(-.gads)) 
     [cards this(state +.+.gads)]
-  ++  on-watch  on-watch:def
-  ++  on-leave  on-leave:def
-  ++  on-peek   on-peek:def
-  ++  on-agent  on-agent:def
+  ++  on-watch 
+    |=  =path
+    ^-  (quip card agent:gall)
+    ?:  public.whitelist
+      =^  cards  yosh  (on-watch:yosh path) 
+      [cards this]
+    ?>  (is-allowed src.bowl whitelist bowl)  
+    =^  cards  yosh  (on-watch:yosh path) 
+    [cards this]
+  ++  on-leave
+    |=  =path
+    ^-  (quip card agent:gall)
+    =^  cards  yosh  (on-leave:yosh path) 
+    [cards this]
+  ++  on-peek 
+    |=  =path
+    ^-  (unit (unit cage))
+    (on-peek:yosh path)
+  ++  on-agent 
+    |=  [=wire =sign:agent:gall]
+    ^-  (quip card agent:gall)
+    =^  cards  yosh  (on-agent:yosh wire sign) 
+    [cards this]
   ++  on-arvo   on-arvo:def
   ++  on-fail   on-fail:def
   --
