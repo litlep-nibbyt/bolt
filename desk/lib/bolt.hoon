@@ -50,8 +50,8 @@
     |=  old=vase
     ^-  (quip card agent:gall)
     =/  gads  !<([@ud %bolt state-0] old)
-::    =.  yosh  (on-load:yosh !>(-.gads)) 
-    `this(state +.+.gads)
+    =^  cards  yosh  (on-load:yosh !>(-.gads)) 
+    [cards this(state +.+.gads)]
   ++  on-watch  on-watch:def
   ++  on-leave  on-leave:def
   ++  on-peek   on-peek:def
