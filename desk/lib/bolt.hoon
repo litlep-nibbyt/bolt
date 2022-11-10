@@ -3,6 +3,10 @@
 
 |% 
 +$  card  card:agent:gall
++$  versioned-state
+  $%  state-0
+  ==
+
 +$  state-0
   $:  [%0 =whitelist.sir]
   ==
@@ -29,13 +33,14 @@
       =^  cards  yosh  (on-poke:ag mark vase)
       [cards this]
     ::
-    ::  Check for %bolt-poke (for manipulating whitelist)
+    ::  Check for %bolt-poke
     ?.  =(mark %bolt-poke)
-      :: If it is, call inner if ship is allowed
+      ::
+      :: If not, call inner if ship is allowed
       ?>  (is-allowed src.bowl whitelist bowl)
         call-inner
     ::
-    ::  If not, poke is for manipulating whitelist
+    ::  If it is, poke is for manipulating whitelist
     =/  a  !<(bean.sir vase) 
     =/  =return.sir  (handle-command command.a whitelist crumb.a bowl)
     ~&  >  +:return
@@ -49,17 +54,25 @@
     |=  old=vase
     ^-  (quip card agent:gall)
     ::
-    :: Unpack vase
-    =/  gads  !<([@ud %bolt state-0] old)
-    ::
-    :: Update of yosh state to inner onload,
-    =^  cards  yosh  (on-load:yosh !>(-.gads)) 
-    ::
-    :: Return quip with inner cards and %bolt state updated
-    [cards this(state +.+.gads)]
+    :: Grab inner vase, unpack bolt-vase
+    =/  inner-v  (slot 2 old)
+    =/  flower  +:!<([%bolt state-0] (slot 3 old))
+    ?-  -.flower
+        %0
+      ::
+      :: Update of yosh state to inner onload,
+      =^  cards  yosh  (on-load:yosh inner-v) 
+      ::
+      :: Return quip with inner cards and %bolt state updated
+      [cards this(state flower)]
+    ==
   ++  on-watch 
     |=  =path
     ^-  (quip card agent:gall)
+    ::
+    ::  TODO http stuff
+    ?:  ?=(%bolt -.path)  `this
+    ::
     ::  Check if ship is allowed
     ?>  (is-allowed src.bowl whitelist bowl)  
     ::
@@ -69,17 +82,24 @@
   ++  on-leave
     |=  =path
     ^-  (quip card agent:gall)
+    ?:  ?=(%bolt -.path)  `this
     =^  cards  yosh  (on-leave:yosh path) 
     [cards this]
-  ++  on-peek 
-    |=  =path
-    ^-  (unit (unit cage))
-    (on-peek:yosh path)
+  ++  on-peek  on-peek:yosh
   ++  on-agent 
     |=  [=wire =sign:agent:gall]
     ^-  (quip card agent:gall)
-    =^  cards  yosh  (on-agent:yosh wire sign) 
-    [cards this]
+    ?.  ?=(%bolt -.wire)
+      ::
+      :: If not a bolt wire, call inner
+      =^  cards  yosh  (on-agent:yosh wire sign) 
+      [cards this]
+    ::
+    ::  Otherwise, check for poke-ack
+    ?.  ?=(%poke-ack -.sign)  `this
+    ?~  p.sign  `this
+    ((slog u.p.sign) `this)
+::
   ++  on-arvo   on-arvo:def
   ++  on-fail   on-fail:def
   --
