@@ -29,21 +29,16 @@
       =^  cards  yosh  (on-poke:ag mark vase)
       [cards this]
     ::
-    ::  If poke is to inner agent,
+    ::  Check for %bolt-poke (for manipulating whitelist)
     ?.  =(mark %bolt-poke)
-      ::
-      ::  Check if whitelist is enabled,
-      ?.  public.whitelist
-        call-inner
-      ::
-      ::  If so, check if ship is allowed
+      :: If it is, call inner if ship is allowed
       ?>  (is-allowed src.bowl whitelist bowl)
         call-inner
     ::
-    ::  Otherwise, poke is for manipulating whitelist
-    =/  gwern  !<(bean.sir vase) 
-    =/  =return.sir  (handle-command +.gwern whitelist ~ bowl)
-    ~&  >  whitelist
+    ::  If not, poke is for manipulating whitelist
+    =/  a  !<(bean.sir vase) 
+    =/  =return.sir  (handle-command command.a whitelist crumb.a bowl)
+    ~&  >  +:return
     `this(whitelist +:return)
   ++  on-save
     ^-  vase
@@ -53,16 +48,22 @@
   ++  on-load
     |=  old=vase
     ^-  (quip card agent:gall)
+    ::
+    :: Unpack vase
     =/  gads  !<([@ud %bolt state-0] old)
+    ::
+    :: Update of yosh state to inner onload,
     =^  cards  yosh  (on-load:yosh !>(-.gads)) 
+    ::
+    :: Return quip with inner cards and %bolt state updated
     [cards this(state +.+.gads)]
   ++  on-watch 
     |=  =path
     ^-  (quip card agent:gall)
-    ?:  public.whitelist
-      =^  cards  yosh  (on-watch:yosh path) 
-      [cards this]
+    ::  Check if ship is allowed
     ?>  (is-allowed src.bowl whitelist bowl)  
+    ::
+    ::  If allowed, call inner
     =^  cards  yosh  (on-watch:yosh path) 
     [cards this]
   ++  on-leave

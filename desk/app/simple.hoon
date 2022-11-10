@@ -2,7 +2,7 @@
 ::  and a (unit @). ~ is single step
 ::  while `5 is five steps.
 ::
-/+  default-agent, verb, dbug, bolt
+/+  default-agent, verb, dbug, bolt, agentio
 ::
 %-  agent:dbug
 %-  agent:bolt
@@ -29,6 +29,11 @@
 ::
 ++  on-poke
   |=  [=mark =vase]
+  ?:  =(%forward mark)
+    =/  faze  !<([@p (unit @)] vase)
+    :_  this
+    :~  (~(poke pass:agentio /forward) [-.faze %simple] [%inc !>(+.faze)])
+    ==
   =.  count
     %+  ?+(mark !! %inc add, %dec sub)
       count

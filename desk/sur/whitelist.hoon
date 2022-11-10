@@ -1,17 +1,17 @@
-/-  r=resource
+::
+::  Modified original from ~hosted-fornet
+::
 |%
 +$  whitelist
   $:  public=?
       kids=?
       users=(set ship)
-      groups=(set resource:r)
   ==
 ::
 +$  target
   $%  [%public ~]
       [%kids ~]
       [%users users=(set ship)]
-      [%groups groups=(set resource:r)]
   ==
 ::
 +$  command
@@ -24,5 +24,5 @@
       =whitelist
   ==
 ::
-+$  bean  [%command =command]
++$  bean  [%command crumb=(unit path) =command]
 --  
