@@ -21,7 +21,10 @@
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
   ::
-  ++  on-init   on-init:ag
+  ++  on-init
+    =^  cards  yosh  on-init:ag
+    [cards this]
+  ::
   ++  on-poke
     |=  [=mark =vase]
     ^-  (quip card agent:gall)
@@ -73,7 +76,7 @@
   ++  on-leave
     |=  =path
     ^-  (quip card agent:gall)
-    ?:  ?=(%bolt -.path)  `this
+    ?:  ?=([%bolt *] path)  `this
     =^  cards  yosh  (on-leave:ag path) 
     [cards this]
   ::
@@ -92,7 +95,14 @@
     ?~  p.sign  `this
     ((slog u.p.sign) `this)
   ::
-  ++  on-arvo   on-arvo:ag
-  ++  on-fail   on-fail:ag
+  ++  on-arvo
+    |=  [=wire =sign-arvo]
+    =^  cards  yosh  (on-arvo:ag wire sign-arvo)
+    [cards this]
+  ::
+  ++  on-fail
+    |=  [=term =tang]
+    =^  cards  yosh  (on-fail:ag term tang)
+    [cards this]
   --
 --
