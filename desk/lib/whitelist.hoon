@@ -12,7 +12,7 @@
   ^-  return:wl
   ?-    -.comm
       %add-whitelist
-    ?+  -.wt.comm  !!
+    ?-  -.wt.comm
         %public
       `whitelist(public %.y)
     ::
@@ -26,7 +26,7 @@
   ::
       %remove-whitelist
     %^  clean-client-list  client-path  bowl
-    ?+    -.wt.comm  !!
+    ?-    -.wt.comm 
         %public
       whitelist(public %.n)
     ::
