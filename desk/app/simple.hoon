@@ -29,11 +29,10 @@
 ::
 ++  on-poke
   |=  [=mark =vase]
-  ?:  =(%forward mark)
+  ?:  ?=(%forward mark)
     =/  faze  !<([@p (unit @)] vase)
     :_  this
-    :~  (~(poke pass:agentio /forward) [-.faze %simple] [%inc !>(+.faze)])
-    ==
+    [(~(poke pass:agentio /forward) [-.faze %simple] [%inc !>(+.faze)])]~
   =.  count
     %+  ?+(mark !! %inc add, %dec sub)
       count
