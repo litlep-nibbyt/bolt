@@ -1,12 +1,26 @@
-/-  sir=whitelist
-/+  verb, agentio, *whitelist
+::
+::  %bolt: whitelist/blacklist wrapper for agents
+::
+::  usage:
+::  /+  bolt
+::  ...
+::  %-(agent:bolt your-agent)
+::
+
+/-  *bolt
+/+  verb, agentio, *permissions
 
 |% 
 +$  card  card:agent:gall
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 =whitelist.sir]
++$  state-0  
+  $:  %0 
+      which=?(%black %white) 
+      =blacklist 
+      =whitelist
+  ==
 ::
 ++  agent
   |=  yosh=agent:gall          :: MatrYOSHka doll
@@ -20,6 +34,8 @@
   +*  this  .
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
+      roster  ?-(which %black blacklist, %white whitelist)
+      allowed  %:(is-allowed src.bowl roster bowl)
   ::
   ++  on-init
     =^  cards  yosh  on-init:ag
@@ -29,19 +45,31 @@
     |=  [=mark =vase]
     ^-  (quip card agent:gall)
     ::
-    ::  Check for %bolt-poke
-    ?.  =(mark %bolt-poke)
+    ::  Check for %bolt poke
+    ?.  ?=(%bolt mark)
       ::
       :: If not, call inner if ship is allowed
-      ?>  (is-allowed src.bowl whitelist bowl)
+      ?>  allowed
       =^  cards  yosh  (on-poke:ag mark vase)
       [cards this]
     ::
-    ::  If it is, poke is for manipulating whitelist
-    =/  a  !<(bean.sir vase) 
-    =/  =return.sir  (handle-command command.a whitelist crumb.a bowl)
-    ~&  >  +:return
-    `this(whitelist +:return)
+    ::  If it is, the poke is for manipulating permissions
+    =/  a  !<(bean vase) 
+    ?-  -.a
+        %toggle
+     `this(which ?:(=(which %black) %white %black))
+    ::
+        %command
+      =/  =return
+      %:  handle-command  command.a
+        roster  crumb.a  bowl  
+      ==
+      :-  -.return
+      ?-  which
+          %black  this(blacklist ;;(^blacklist +.return))
+          %white  this(whitelist ;;(^whitelist +.return))
+      ==
+    ==
   ::
   ++  on-save
     ^-  vase
@@ -52,12 +80,12 @@
     |=  old=vase
     ^-  (quip card agent:gall)
     ::
-    :: Update of yosh state to inner onload,
+    :: Update yosh's state using yosh's on-load,
     =^  cards  yosh  (on-load:ag (slot 2 old)) 
     ::
-    :: Return quip with inner cards and %bolt state updated
+    :: Return quip with yosh's cards and %bolt's updated state.
     :-  cards
-    this(state +:!<([%bolt state-0] (slot 3 old)))
+    this(state +:!<([%bolt versioned-state] (slot 3 old)))
   ::
   ++  on-watch 
     |=  =path
@@ -66,10 +94,10 @@
     ::  TODO http stuff
     ?:  ?=([%bolt *] path)  `this
     ::
-    ::  Check if ship is allowed
-    ?>  (is-allowed src.bowl whitelist bowl)  
+    ::  Check if ship is allowed,
+    ?>  allowed  
     ::
-    ::  If allowed, call inner
+    ::  If allowed, call inner.
     =^  cards  yosh  (on-watch:ag path) 
     [cards this]
   ::
@@ -86,11 +114,11 @@
     ^-  (quip card agent:gall)
     ?.  ?=([%bolt *] wire)
       ::
-      :: If not a bolt wire, call inner
+      :: If not a %bolt wire, call inner,
       =^  cards  yosh  (on-agent:ag wire sign) 
       [cards this]
     ::
-    ::  Otherwise, check for poke-ack
+    ::  Otherwise, check for poke-ack.
     ?.  ?=(%poke-ack -.sign)  `this
     ?~  p.sign  `this
     ((slog u.p.sign) `this)
