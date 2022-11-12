@@ -34,8 +34,9 @@
   +*  this  .
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
+      perms  ~(. permissions bowl)
       roster  ?-(which %black blacklist, %white whitelist)
-      allowed  %:(is-allowed src.bowl roster bowl)
+      allowed  %:(is-allowed:perms src.bowl roster)
   ::
   ++  on-init
     =^  cards  yosh  on-init:ag
@@ -54,16 +55,14 @@
       [cards this]
     ::
     ::  If it is, the poke is for manipulating permissions
+    ?>  =(src.bowl our.bowl)
     =/  a  !<(bean vase) 
     ?-  -.a
         %toggle
      `this(which ?:(=(which %black) %white %black))
     ::
         %command
-      =/  =return
-      %:  handle-command  command.a
-        roster  crumb.a  bowl  
-      ==
+      =/  =return  (handle-command:perms command.a roster crumb.a)
       :-  -.return
       ?-  which
           %black  this(blacklist ;;(^blacklist +.return))
