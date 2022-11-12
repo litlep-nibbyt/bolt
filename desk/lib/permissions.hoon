@@ -18,48 +18,33 @@
       `lizst(kids %.y)
     ::
         %users
-      ~&  >>  ^-  return  `lizst(users (~(uni in users.lizst) users.target.comm))
       `lizst(users (~(uni in users.lizst) users.target.comm))
     ::
     ==
   ::
       %remove
-::    %^  clean-client-list  client-path  bowl
+    %^  clean-subs  client-path  bowl
     ?-    -.target.comm 
     ::
         %kids
-      `lizst(kids %.n)
+      lizst(kids %.n)
     ::
         %users
-      `lizst(users (~(dif in users.lizst) users.target.comm))
+      lizst(users (~(dif in users.lizst) users.target.comm))
     ::
     ==
   ==
 ::
-++  clean-white
-  |=  [client-path=(unit path) =bowl:gall =whitelist]
+++  clean-subs
+  |=  [client-path=(unit path) =bowl:gall =lizst]
   ^-  return
   =/  to-kick=(set ship)
     %-  silt
-    %+  murn  ~(tap in users.whitelist)
+    %+  murn  ~(tap in users.lizst)
     |=  c=ship  ^-  (unit ship)
-    ?:((is-allowed c whitelist bowl) ~ `c)
-  =.  users.whitelist  (~(dif in users.whitelist) to-kick)
-  :_  whitelist
-  ?~  client-path  ~
-  %+  turn  ~(tap in to-kick)
-  |=(c=ship [%give %kick ~[u.client-path] `c])
-::
-++  clean-black
-  |=  [client-path=(unit path) =bowl:gall =blacklist]
-  ^-  return
-  =/  to-kick=(set ship)
-    %-  silt
-    %+  murn  ~(tap in users.blacklist)
-    |=  c=ship  ^-  (unit ship)
-    ?:((is-allowed c blacklist bowl) ~ `c)
-  =.  users.blacklist  (~(dif in users.blacklist) to-kick)
-  :_  blacklist
+    ?:((is-allowed c lizst bowl) ~ `c)
+  =.  users.lizst  (~(dif in users.lizst) to-kick)
+  :_  lizst
   ?~  client-path  ~
   %+  turn  ~(tap in to-kick)
   |=(c=ship [%give %kick ~[u.client-path] `c])
@@ -70,26 +55,34 @@
   |^
   ?-  -.lizst
   ::
-  :: allow if you're the owner OR (you are a kid OR not in blacklist)
+  :: allow if you're the owner OR not in blacklist,
+  :: if kids is %&, do not allow if parent is blacklisted 
   ::
       %blacklist
     ?|  =(our.bowl user)
-       &(kids.lizst (is-kid bowl)) 
-       !(~(has in users.lizst) user)
-     ==
+      ?&  !(~(has in users.lizst) user)
+          &(kids.lizst !(is-kid bowl))
+      ==
+    ==
   ::
-  :: allow if you're the owner OR (a kid OR in whitelist)
+  :: allow if you're the owner OR in a whitelist
+  :: if kids is %&, allow if parent is whitelisted or parent is owner
   ::
       %whitelist
     ?|  =(our.bowl user)
-      &(kids.lizst (is-kid bowl)) 
-      (~(has in users.lizst) user)
+        (~(has in users.lizst) user)
+        &(kids.lizst (is-kid bowl))
     ==
   ==
   ::
   ++  is-kid
     |=  =bowl:gall
-    =(our.bowl (sein:title our.bowl now.bowl user))
+    ?|  =(our.bowl (sein:title our.bowl now.bowl user))
+        (~(has in users.lizst) (parent bowl))
+    ==
+  ++  parent
+    |=  =bowl:gall
+    (sein:title our.bowl now.bowl user)
   ::
   --
 --  

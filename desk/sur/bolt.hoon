@@ -4,6 +4,7 @@
 |%
 +$  blacklist  [%blacklist kids=? users=(set ship)]
 +$  whitelist  [%whitelist kids=? users=(set ship)]
+ 
 +$  lizst  
   $%  blacklist
       whitelist
