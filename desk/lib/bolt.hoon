@@ -78,12 +78,12 @@
           %black 
         =.  users.blacklist  (~(uni in users.blacklist) users.bean)
         :_  this        
-            ~[(emit add-users-black/a+%+(turn ~(tap in users.bean) |=(a=@p (ship:enjs:format a))))]
+            ~[(emit add-users-black/(ships:util:json users.bean))]
       ::
           %white 
         =.  users.whitelist  (~(uni in users.whitelist) users.bean)
         :_  this           
-            ~[(emit add-users-white/a+%+(turn ~(tap in users.bean) |=(a=@p (ship:enjs:format a))))]
+            ~[(emit add-users-white/(ships:util:json users.bean))]
       ==
     ::
         %remove-users
@@ -93,15 +93,14 @@
          =/  effects  (clean:perms crumb.bean kids blacklist)
          :_  this(users.blacklist users.nu.effects)
              %+  weld  cards.effects 
-               ~[(emit remove-users-black/a+%+(turn ~(tap in users.bean) |=(a=@p (ship:enjs:format a))))]
+               ~[(emit remove-users-black/(ships:util:json users.bean))]
       ::
           %white 
          =.  users.whitelist  (~(dif in users.whitelist) users.bean) 
          =/  effects  (clean:perms crumb.bean kids blacklist)
          :_  this(users.whitelist users.nu.effects) 
              %+  weld  cards.effects 
-              ~[(emit remove-users-white/a+%+(turn ~(tap in users.bean) |=(a=@p (ship:enjs:format a))))]
-  
+              ~[(emit remove-users-white/(ships:util:json users.bean))]
       ==
     ==
   ::
@@ -220,6 +219,7 @@
   ++  json
     =,  enjs:format
     |_  state=state-0
+  ::
     ++  website
       |=  [type=cord diff=^json]     
       ^-  card
@@ -251,6 +251,13 @@
              |=(a=@p (ship a))
           ==
       ==  == 
+  ++  util
+    |%  
+    ++  ships
+      |=  users=(set @p) 
+      ^-  ^json
+      [%a %+(turn ~(tap in users) |=(a=@p (ship a)))]
+  ::
     --
-  --
+  --  --
 --
