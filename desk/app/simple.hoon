@@ -2,6 +2,7 @@
 ::  and a (unit @). ~ is single step
 ::  while `5 is five steps.
 ::
+/-  *simp
 /+  default-agent, verb, dbug, bolt, agentio
 ::
 %-  agent:dbug
@@ -29,10 +30,26 @@
 ::
 ++  on-poke
   |=  [=mark =vase]
-  ?:  ?=(%forward mark)
-    =/  faze  !<([@p (unit @)] vase)
-    :_  this
-    [(~(poke pass:agentio /forward) [-.faze %simple] [%inc !>(+.faze)])]~
+  ?:  ?=(%test mark)
+    =/  faze  !<(poak vase)
+    =/  to=@p  to.faze
+    ?-  -.payload.faze
+        %inc
+      :_  this
+      [(~(poke pass:agentio /test) [to.faze %simple] [%inc !>(+.payload.faze)])]~
+  ::
+        %dec
+      :_  this
+      [(~(poke pass:agentio /test) [to.faze %simple] [%inc !>(+.payload.faze)])]~
+  ::
+        %watch-self
+     :_  this
+     [(~(watch-our pass:agentio /test) dap.bowl /website/initialize)]~
+  ::
+        %watch
+     :_  this
+     [(~(watch pass:agentio /test) [to.faze dap.bowl] /website/initialize)]~
+    ==
   =.  count
     %+  ?+(mark !! %inc add, %dec sub)
       count
