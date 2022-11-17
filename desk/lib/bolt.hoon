@@ -257,7 +257,6 @@
       |=  users=(set @p) 
       ^-  ^json
       [%a %+(turn ~(tap in users) |=(a=@p (ship a)))]
-  ::
     --
   --  --
 --
