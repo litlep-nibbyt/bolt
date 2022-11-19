@@ -6,19 +6,17 @@
 +$  whitelist  [%whitelist users=(set ship)]
  
 +$  lizst  
-  $%  blacklist
-      whitelist
+  $%  whitelist
+      blacklist
   ==
-::
-+$  return
-  $:  cards=(list card:agent:gall)
-      nu=lizst
-  ==
+
 ::
 +$  bean  
   $%  [%toggle-kids ~]
       [%toggle-which ~]
-      [%add-users users=(set ship)]
-      [%remove-users users=(set ship) crumb=(unit path)]
+      [%add-white users=(set ship)]
+      [%add-black users=(set ship)]
+      [%remove-white users=(set ship) crumb=(unit path)]
+      [%remove-black users=(set ship) crumb=(unit path)]
   ==
 --  
