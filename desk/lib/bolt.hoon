@@ -18,7 +18,7 @@
   ==
 +$  state-0  
   $:  %0 
-      which=?(%black %white) 
+      which=?(%on %off) 
       kids=?
       =blacklist 
       =whitelist
@@ -39,9 +39,9 @@
   +*  this  .
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
-      perms  ~(. permissions bowl)
-      roster  ?-(which %black blacklist, %white whitelist)
-      allowed  %:(is-allowed:perms src.bowl kids roster)
+      perms  ~(. permissions bowl state)
+      roster  ?-(which %on whitelist, %off whitelist)
+      allowed  %:(is-allowed:perms src.bowl)
       emit   ~(website json state)
   ::
   ++  on-init
@@ -65,7 +65,7 @@
     =/  =bean  !<(bean vase) 
     ?-  -.bean
         %toggle-which
-      =.  which  ?:(=(which %black) %white %black)
+      =.  which  ?:(=(which %on) %off %on)
       :-  ~[(emit which/s+which)]
           this 
     ::
@@ -73,35 +73,25 @@
       :-  ~[(emit kids/b+kids)]
           this(kids !kids)
     ::
-        %add-users
-      ?-  which 
-          %black 
-        =.  users.blacklist  (~(uni in users.blacklist) users.bean)
-        :_  this        
-            ~[(emit add-users-black/(ships:util:json users.bean))]
-      ::
-          %white 
+        %add-white
         =.  users.whitelist  (~(uni in users.whitelist) users.bean)
         :_  this           
             ~[(emit add-users-white/(ships:util:json users.bean))]
-      ==
     ::
-        %remove-users
-      ?-  which
-          %black 
-         =.  users.blacklist  (~(dif in users.blacklist) users.bean) 
-         =/  effects  (clean:perms crumb.bean kids blacklist)
-         :_  this(users.blacklist users.nu.effects)
-             %+  weld  cards.effects 
-               ~[(emit remove-users-black/(ships:util:json users.bean))]
+        %add-black
+      =.  users.blacklist  (~(uni in users.blacklist) users.bean)
+      :_  this           
+          ~[(emit add-users-black/(ships:util:json users.bean))]
+    ::
+        %remove-white
+      =.  users.whitelist  (~(dif in users.whitelist) users.bean) 
+      :_  this
+          ~[(emit remove-users-white/(ships:util:json users.bean))]
       ::
-          %white 
-         =.  users.whitelist  (~(dif in users.whitelist) users.bean) 
-         =/  effects  (clean:perms crumb.bean kids blacklist)
-         :_  this(users.whitelist users.nu.effects) 
-             %+  weld  cards.effects 
-              ~[(emit remove-users-white/(ships:util:json users.bean))]
-      ==
+        %remove-black
+      =.  users.blacklist  (~(dif in users.blacklist) users.bean) 
+      :_  this
+          ~[(emit remove-users-black/(ships:util:json users.bean))]
     ==
   ::
   ++  on-save
@@ -174,47 +164,28 @@
   --
   |%
   ++  permissions
-    |_  =bowl:gall
+    |_  [=bowl:gall state=state-0]
     +*  parent  (sein:title our.bowl now.bowl src.bowl)
-    ++  clean
-      |=  [client-path=(unit path) kids=? =lizst]
-      ^-  return
-      =/  to-kick=(set ship)
-        %-  silt
-        %+  murn  ~(tap in users.lizst)
-        |=  c=ship  ^-  (unit ship)
-        ?:((is-allowed c kids lizst) ~ `c)
-      =.  users.lizst  (~(dif in users.lizst) to-kick)
-      :_  lizst
-      ?~  client-path  ~
-      %+  turn  ~(tap in to-kick)
-      |=(c=ship [%give %kick ~[u.client-path] `c])
   ::
     ++  is-allowed
-      |=  [user=@p kids=? =lizst]
-      =*  is-kid  |(=(our.bowl parent) (~(has in users.lizst) parent))
+      |=  user=@p
+      =+  state
+      =*  moon-gud  |(=(our.bowl parent) (~(has in users.whitelist) parent))
+      =*  moon-bad  |(=(our.bowl parent) (~(has in users.blacklist) parent))
       ^-  ?
-      ?-  -.lizst
       ::
-      :: allow if you're the owner OR not in blacklist,
-      :: if kids is %&, do not allow if parent is blacklisted 
+      ::  Do not allow if in blacklist or kids and kid of blacklister
+      ?&  |(!(~(has in users.blacklist) user) &(kids !moon-bad))
       ::
-          %blacklist
-        ?|  =(our.bowl user)
-          ?&  !(~(has in users.lizst) user)
-              &(kids !is-kid)
+      :: If whitelist is on, check if user is in whitelist or kid of whitelister
+          ?:  =(which %off)
+            %&
+          ?|  =(our.bowl user)
+              (~(has in users.whitelist) user)
+              &(kids moon-gud)
           ==
-        ==
-      ::
-      :: allow if you're the owner OR in a whitelist
-      :: if kids is %&, allow if parent is whitelisted or parent is owner
-      ::
-          %whitelist
-        ?|  =(our.bowl user)
-            (~(has in users.lizst) user)
-            &(kids is-kid)
-        ==
       ==
+      ::
     --
   ++  json
     =,  enjs:format

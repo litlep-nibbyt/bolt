@@ -40,7 +40,7 @@
   ::
         %dec
       :_  this
-      [(~(poke pass:agentio /test) [to.faze %simple] [%inc !>(+.payload.faze)])]~
+      [(~(poke pass:agentio /test) [to.faze %simple] [%dec !>(+.payload.faze)])]~
   ::
         %watch-self
      :_  this
