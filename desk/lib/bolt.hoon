@@ -195,8 +195,6 @@
     ++  website
       |=  [type=cord diff=^json]     
       ^-  card
-      =;  skel
-      ~&  >  skel
       %-  fact:agentio  :_  ~[/website]
       :-  %json  !>  ^-  ^json  skel
     ::
