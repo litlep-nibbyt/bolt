@@ -18,7 +18,7 @@
   ==
 +$  state-0  
   $:  %0 
-      which=?(%on %off) 
+      which=?
       kids=?
       =blacklist 
       =whitelist
@@ -65,33 +65,34 @@
     =/  =bean  !<(bean vase) 
     ?-  -.bean
         %toggle-which
-      =.  which  ?:(=(which %on) %off %on)
-      :-  ~[(emit which/s+which)]
+      =.  which  switch.bean
+      :-  ~[(emit which/b+which)]
           this 
     ::
         %toggle-kids
+      =.  kids  switch.bean
       :-  ~[(emit kids/b+kids)]
-          this(kids !kids)
+          this
     ::
         %add-white
         =.  users.whitelist  (~(uni in users.whitelist) users.bean)
         :_  this           
-            ~[(emit add-users-white/(ships:util:json users.bean))]
+            ~[(emit add-users-white/(ships:util:json users.whitelist))]
     ::
         %add-black
       =.  users.blacklist  (~(uni in users.blacklist) users.bean)
       :_  this           
-          ~[(emit add-users-black/(ships:util:json users.bean))]
+          ~[(emit add-users-black/(ships:util:json users.blacklist))]
     ::
         %remove-white
       =.  users.whitelist  (~(dif in users.whitelist) users.bean) 
       :_  this
-          ~[(emit remove-users-white/(ships:util:json users.bean))]
+          ~[(emit remove-users-white/(ships:util:json users.whitelist))]
       ::
         %remove-black
       =.  users.blacklist  (~(dif in users.blacklist) users.bean) 
       :_  this
-          ~[(emit remove-users-black/(ships:util:json users.bean))]
+          ~[(emit remove-users-black/(ships:util:json users.blacklist))]
     ==
   ::
   ++  on-save
@@ -205,7 +206,7 @@
           [%diff diff]
         :-  %state
         %-  pairs
-        :~  [%which s+which]
+        :~  [%which b+which]
             [%kids b+kids]
           :-  %whitelist
           %-  pairs

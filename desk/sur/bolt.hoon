@@ -12,11 +12,11 @@
 
 ::
 +$  bean  
-  $%  [%toggle-kids ~]
-      [%toggle-which ~]
-      [%add-white users=(set ship)]
+  $%  [%add-white users=(set ship)]
       [%add-black users=(set ship)]
-      [%remove-white users=(set ship) crumb=(unit path)]
-      [%remove-black users=(set ship) crumb=(unit path)]
+      [%remove-white users=(set ship)]
+      [%remove-black users=(set ship)]
+      [%toggle-kids switch=?]
+      [%toggle-which switch=?]
   ==
 --  
