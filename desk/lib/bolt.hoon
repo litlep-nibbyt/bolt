@@ -177,9 +177,11 @@
       ::  Do not allow if in blacklist or kids and kid of blacklister
       ?&  |(!(~(has in users.blacklist) user) &(kids !moon-bad))
       ::
-      :: If whitelist is on, check if user is in whitelist or kid of whitelister
-          ?:  =(which %off)
+      :: If whitelist is off -- allow user,
+          ?:  =(which %|)
             %&
+      ::
+      :: If whitelist is on, check if user is in whitelist or kid of whitelister.
           ?|  =(our.bowl user)
               (~(has in users.whitelist) user)
               &(kids moon-gud)
