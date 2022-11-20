@@ -40,7 +40,6 @@
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
       perms  ~(. permissions bowl state)
-      roster  ?-(which %on whitelist, %off whitelist)
       allowed  %:(is-allowed:perms src.bowl)
       emit   ~(website json state)
   ::
@@ -196,7 +195,7 @@
       |=  [type=cord diff=^json]     
       ^-  card
       %-  fact:agentio  :_  ~[/website]
-      :-  %json  !>  ^-  ^json  skel
+      :-  %json  !>  ^-  ^json
     ::
     ::  parsing starts here
       %-  pairs
