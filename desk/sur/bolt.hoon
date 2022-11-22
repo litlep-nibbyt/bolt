@@ -4,12 +4,11 @@
 |%
 +$  blacklist  [%blacklist users=(set ship)]
 +$  whitelist  [%whitelist users=(set ship)]
- 
+::
 +$  lizst  
   $%  whitelist
       blacklist
   ==
-
 ::
 +$  bean  
   $%  [%add-white users=(set ship)]
@@ -17,6 +16,6 @@
       [%remove-white users=(set ship)]
       [%remove-black users=(set ship)]
       [%toggle-kids switch=?]
-      [%toggle-which switch=?]
+      [%toggle-white switch=?]
   ==
---  
+--
