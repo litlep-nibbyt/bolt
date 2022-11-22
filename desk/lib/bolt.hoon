@@ -59,7 +59,7 @@
     ::  If it is, the poke is for manipulating permissions
     ?>  =(src.bowl our.bowl)
     =/  =bean  !<(bean vase) 
-    ?-  -.bean
+    ?-    -.bean
         %toggle-white
       =.  white  switch.bean
       :_  this 
