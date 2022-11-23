@@ -6,24 +6,23 @@
 ::  ...
 ::  %-(agent:bolt your-agent)
 ::
-
 /-  *bolt
 /+  verb, agentio
-
+::
 =>
-|% 
-+$  card  card:agent:gall
-+$  versioned-state
-  $%  state-0
-  ==
-+$  state-0  
-  $:  %0 
-      which=?
-      kids=?
-      =blacklist 
-      =whitelist
-  ==
---
+  |% 
+  +$  card  card:agent:gall
+  +$  versioned-state
+    $%  state-0
+    ==
+  +$  state-0  
+    $:  %0 
+        white=?
+        kids=?
+        blacklist=(set ship)
+        whitelist=(set ship)
+    ==
+  --
 ::
 |%
 ++  agent
@@ -39,9 +38,7 @@
   +*  this  .
       ag    ~(. yosh bowl)
       io    ~(. agentio bowl)
-      perms  ~(. permissions bowl state)
-      allowed  %:(is-allowed:perms src.bowl)
-      emit   ~(website json state)
+      allowed  (is-allowed bowl)
   ::
   ++  on-init
     =^  cards  yosh  on-init:ag
@@ -63,35 +60,35 @@
     ?>  =(src.bowl our.bowl)
     =/  =bean  !<(bean vase) 
     ?-  -.bean
-        %toggle-which
-      =.  which  switch.bean
-      :-  ~[(emit which/b+which)]
-          this 
+        %toggle-white
+      =.  white  switch.bean
+      :_  this 
+        ~[(emit:json white/b+white)]
     ::
         %toggle-kids
       =.  kids  switch.bean
-      :-  ~[(emit kids/b+kids)]
-          this
+      :_  this
+        ~[(emit:json kids/b+kids)]
     ::
         %add-white
-        =.  users.whitelist  (~(uni in users.whitelist) users.bean)
+        =.  whitelist  (~(uni in whitelist) users.bean)
         :_  this           
-            ~[(emit add-users-white/(ships:util:json users.whitelist))]
+            ~[(emit:json add-users-white/(ships:util:json whitelist))]
     ::
         %add-black
-      =.  users.blacklist  (~(uni in users.blacklist) users.bean)
+      =.  blacklist  (~(uni in blacklist) users.bean)
       :_  this           
-          ~[(emit add-users-black/(ships:util:json users.blacklist))]
+          ~[(emit:json add-users-black/(ships:util:json blacklist))]
     ::
         %remove-white
-      =.  users.whitelist  (~(dif in users.whitelist) users.bean) 
+      =.  whitelist  (~(dif in whitelist) users.bean) 
       :_  this
-          ~[(emit remove-users-white/(ships:util:json users.whitelist))]
+          ~[(emit:json remove-users-white/(ships:util:json whitelist))]
       ::
         %remove-black
-      =.  users.blacklist  (~(dif in users.blacklist) users.bean) 
+      =.  blacklist  (~(dif in blacklist) users.bean) 
       :_  this
-          ~[(emit remove-users-black/(ships:util:json users.blacklist))]
+          ~[(emit:json remove-users-black/(ships:util:json blacklist))]
     ==
   ::
   ++  on-save
@@ -116,7 +113,8 @@
     ::
     ::  Check for %bolt watch requests
     ?.  ?=([%bolt %website ~] path)
-      :_  this  ~[(emit initial/~)]
+      :_  this  
+        ~[(emit:json initial/~)]
     ::
     ::  If not for %bolt, check if ship is allowed,
     ?>  allowed  
@@ -135,8 +133,8 @@
   ++  on-peek
     |=  =path
     ^-  (unit (unit cage))
-    ?+    -.path  (on-peek:ag path) 
-        %bolt  ~
+    ?+  path  (on-peek:ag path) 
+      [%x %bolt *]  ~
     ==
   ++  on-agent 
     |=  [=wire =sign:agent:gall]
@@ -162,72 +160,53 @@
     =^  cards  yosh  (on-fail:ag term tang)
     [cards this]
   --
-  |%
-  ++  permissions
-    |_  [=bowl:gall state=state-0]
-    +*  parent  (sein:title our.bowl now.bowl src.bowl)
   ::
-    ++  is-allowed
-      |=  user=@p
-      =+  state
-      =*  moon-gud  |(=(our.bowl parent) (~(has in users.whitelist) parent))
-      =*  moon-bad  |(=(our.bowl parent) (~(has in users.blacklist) parent))
-      ^-  ?
-      ::
-      ::  Do not allow if in blacklist or kids and kid of blacklister
-      ?&  |(!(~(has in users.blacklist) user) &(kids !moon-bad))
-      ::
-      :: If whitelist is off -- allow user,
-          ?:  =(which %|)
-            %&
-      ::
-      :: If whitelist is on, check if user is in whitelist or kid of whitelister.
-          ?|  =(our.bowl user)
-              (~(has in users.whitelist) user)
-              &(kids moon-gud)
-          ==
-      ==
-      ::
-    --
+  |%
+  ++  is-allowed
+    |=  =bowl:gall
+    ^-  ?
+    =*  parent  (sein:title our.bowl now.bowl src.bowl)
+    =*  moon-gud  |(=(our.bowl parent) (~(has in whitelist) parent))
+    =*  moon-bad  |(=(our.bowl parent) (~(has in blacklist) parent))
+    ::
+    ::  Do not allow if in blacklist or kids and kid of blacklister,
+    ?&  |(!(~(has in blacklist) src.bowl) &(kids !moon-bad))
+        ::  If whitelist is off -- allow user,
+        ?|  !white 
+        ::  If whitelist is on, check if user is in whitelist or kid of whitelister.
+            =(our.bowl src.bowl)
+            (~(has in whitelist) src.bowl)
+            &(kids moon-gud)
+    ==  ==
+  ::
   ++  json
     =,  enjs:format
-    |_  state=state-0
-  ::
-    ++  website
+    |%
+    ++  emit
       |=  [type=cord diff=^json]     
       ^-  card
       %-  fact:agentio  :_  ~[/website]
       :-  %json  !>  ^-  ^json
-    ::
-    ::  parsing starts here
+      ::
+      ::  parsing starts here
       %-  pairs
       :~  [%type s+type]
           [%diff diff]
-        :-  %state
-        %-  pairs
-        :~  [%which b+which]
-            [%kids b+kids]
-          :-  %whitelist
+          :-  %state
           %-  pairs
-          :~  :+  %users
-               %a
-               %+  turn  ~(tap in users.whitelist)
-               |=(a=@p (ship a))
-          ==
-          :-  %blacklist
-          %-  pairs
-          :~  :+  %users
-              %a
-             %+  turn  ~(tap in users.blacklist)
-             |=(a=@p (ship a))
-          ==
-      ==  == 
-  ++  util
-    |%  
-    ++  ships
-      |=  users=(set @p) 
-      ^-  ^json
-      [%a %+(turn ~(tap in users) |=(a=@p (ship a)))]
-    --
-  --  --
+          :~  [%white b+white]
+              [%kids b+kids]
+              [%whitelist (frond %users (ships:util whitelist))]
+              [%blacklist (frond %users (ships:util blacklist))]
+      ==  ==
+      ::
+    ++  util
+      |%  
+      ++  ships
+        |=  users=(set @p) 
+        ^-  ^json
+        [%a (turn ~(tap in users) ship)]
+      --
+    -- 
+  --
 --
