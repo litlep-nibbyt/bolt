@@ -15,7 +15,7 @@
   +$  versioned-state
     $%  state-0
     ==
-  +$  state-0  
+  +$  state-0
     $:  %0 
         white=?
         kids=?
@@ -58,37 +58,37 @@
     ::
     ::  If it is, the poke is for manipulating permissions
     ?>  =(src.bowl our.bowl)
-    =/  =bean  !<(bean vase) 
+    =/  =bean  !<(bean vase)
     ?-    -.bean
         %toggle-white
       =.  white  switch.bean
-      :_  this 
-        ~[(emit:json white/b+white)]
+      :_  this
+      ~[(emit:json white/b+white)]
     ::
         %toggle-kids
       =.  kids  switch.bean
       :_  this
-        ~[(emit:json kids/b+kids)]
+      ~[(emit:json kids/b+kids)]
     ::
         %add-white
-        =.  whitelist  (~(uni in whitelist) users.bean)
-        :_  this           
-            ~[(emit:json add-users-white/(ships:util:json whitelist))]
+      =.  whitelist  (~(uni in whitelist) users.bean)
+      :_  this 
+      ~[(emit:json add-users-white/(ships:util:json whitelist))]
     ::
         %add-black
       =.  blacklist  (~(uni in blacklist) users.bean)
       :_  this           
-          ~[(emit:json add-users-black/(ships:util:json blacklist))]
+      ~[(emit:json add-users-black/(ships:util:json blacklist))]
     ::
         %remove-white
-      =.  whitelist  (~(dif in whitelist) users.bean) 
+      =.  whitelist  (~(dif in whitelist) users.bean)
       :_  this
-          ~[(emit:json remove-users-white/(ships:util:json whitelist))]
+      ~[(emit:json remove-users-white/(ships:util:json whitelist))]
       ::
         %remove-black
       =.  blacklist  (~(dif in blacklist) users.bean) 
       :_  this
-          ~[(emit:json remove-users-black/(ships:util:json blacklist))]
+      ~[(emit:json remove-users-black/(ships:util:json blacklist))]
     ==
   ::
   ++  on-save
@@ -101,26 +101,26 @@
     ^-  (quip card agent:gall)
     ::
     :: Update yosh's state using yosh's on-load,
-    =^  cards  yosh  (on-load:ag (slot 2 old)) 
+    =^  cards  yosh  (on-load:ag (slot 2 old))
     ::
     :: Return quip with yosh's cards and %bolt's updated state.
     :-  cards
     this(state +:!<([%bolt versioned-state] (slot 3 old)))
   ::
-  ++  on-watch 
+  ++  on-watch
     |=  =path
     ^-  (quip card agent:gall)
     ::
     ::  Check for %bolt watch requests
     ?.  ?=([%bolt %website ~] path)
-      :_  this  
+      :_  this
         ~[(emit:json initial/~)]
     ::
     ::  If not for %bolt, check if ship is allowed,
-    ?>  allowed  
+    ?>  allowed
     ::
     ::  If allowed, call inner.
-    =^  cards  yosh  (on-watch:ag path) 
+    =^  cards  yosh  (on-watch:ag path)
     [cards this]
   ::
   ++  on-leave
@@ -133,16 +133,16 @@
   ++  on-peek
     |=  =path
     ^-  (unit (unit cage))
-    ?+  path  (on-peek:ag path) 
+    ?+  path  (on-peek:ag path)
       [%x %bolt *]  ~
     ==
-  ++  on-agent 
+  ++  on-agent
     |=  [=wire =sign:agent:gall]
     ^-  (quip card agent:gall)
     ?.  ?=([%bolt *] wire)
       ::
       :: If not a %bolt wire, call inner,
-      =^  cards  yosh  (on-agent:ag wire sign) 
+      =^  cards  yosh  (on-agent:ag wire sign)
       [cards this]
     ::
     ::  Otherwise, check for poke-ack.
@@ -172,7 +172,7 @@
     ::  Do not allow if in blacklist or kids and kid of blacklister,
     ?&  |(!(~(has in blacklist) src.bowl) &(kids !moon-bad))
         ::  If whitelist is off -- allow user,
-        ?|  !white 
+        ?|  !white
         ::  If whitelist is on, check if user is in whitelist or kid of whitelister.
             =(our.bowl src.bowl)
             (~(has in whitelist) src.bowl)
@@ -183,7 +183,7 @@
     =,  enjs:format
     |%
     ++  emit
-      |=  [type=cord diff=^json]     
+      |=  [type=cord diff=^json]
       ^-  card
       %-  fact:agentio  :_  ~[/website]
       :-  %json  !>  ^-  ^json
@@ -199,11 +199,11 @@
               [%whitelist (frond %users (ships:util whitelist))]
               [%blacklist (frond %users (ships:util blacklist))]
       ==  ==
-      ::
+    ::
     ++  util
-      |%  
+      |%
       ++  ships
-        |=  users=(set @p) 
+        |=  users=(set @p)
         ^-  ^json
         [%a (turn ~(tap in users) ship)]
       --
