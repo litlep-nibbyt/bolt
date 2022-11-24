@@ -84,7 +84,7 @@
       =.  whitelist  (~(dif in whitelist) users.bean)
       :_  this
       ~[(emit:json remove-users-white/(ships:util:json whitelist))]
-      ::
+    ::
         %remove-black
       =.  blacklist  (~(dif in blacklist) users.bean) 
       :_  this
