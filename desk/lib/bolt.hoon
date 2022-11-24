@@ -114,7 +114,7 @@
     ::  Check for %bolt watch requests
     ?.  ?=([%bolt %website ~] path)
       :_  this
-        ~[(emit:json initial/~)]
+      ~[(emit:json initial/~)]
     ::
     ::  If not for %bolt, check if ship is allowed,
     ?>  allowed
