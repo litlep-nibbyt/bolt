@@ -71,11 +71,15 @@
       ~[(emit:json kids/b+kids)]
     ::
         %add-white
+      ?>  ?=(~ (~(int in blacklist) users.bean))
       =.  whitelist  (~(uni in whitelist) users.bean)
       :_  this 
       ~[(emit:json add-users-white/(ships:util:json whitelist))]
     ::
         %add-black
+      ?>  ?&  !(~(has in users.bean) our.bowl) 
+              ?=(~ (~(int in whitelist) users.bean))
+          ==
       =.  blacklist  (~(uni in blacklist) users.bean)
       :_  this           
       ~[(emit:json add-users-black/(ships:util:json blacklist))]
@@ -166,18 +170,15 @@
     |=  =bowl:gall
     ^-  ?
     =*  parent  (sein:title our.bowl now.bowl src.bowl)
-    =*  moon-gud  |(=(our.bowl parent) (~(has in whitelist) parent))
-    =*  moon-bad  |(=(our.bowl parent) (~(has in blacklist) parent))
-    ::
-    ::  Do not allow if in blacklist or kids and kid of blacklister,
-    ?&  |(!(~(has in blacklist) src.bowl) &(kids !moon-bad))
-        ::  If whitelist is off -- allow user,
-        ?|  !white
-        ::  If whitelist is on, check if user is in whitelist or kid of whitelister.
-            =(our.bowl src.bowl)
-            (~(has in whitelist) src.bowl)
-            &(kids moon-gud)
-    ==  ==
+    =*  is-moon  (team:title parent src.bowl)
+    =*  p-black  (~(has in blacklist) parent)
+    =*  p-white  (~(has in whitelist) parent)
+    ?&  !|((~(has in blacklist) src.bowl) &(kids is-moon p-black))
+        ?|  !white 
+            =(our.bowl src.bowl) 
+            (~(has in whitelist) src.bowl) 
+            &(kids is-moon p-white)
+    ==  == 
   ::
   ++  json
     =,  enjs:format
